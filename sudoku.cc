@@ -153,7 +153,10 @@ public:
 #include<string>
 #include<cstring>
 #include<algorithm>
+#include<cmath>
+#include<stdexcept>
 template<int N> class covter {
+	const int subN;
 	dlx solver;
 	node* mpC[4][N][N];
 	struct decision {
@@ -164,7 +167,7 @@ template<int N> class covter {
 	};
 	vector<decision> dcs;
 	int get_sub(int i,int j) {
-		return (i/3)*3+j/3;
+		return (i/subN)*subN+j/subN;
 	}
 	char vs[N][N+1];
 	void event_listener(int e,int line) {
@@ -191,7 +194,9 @@ template<int N> class covter {
 	};
 	friend class my_handler;
 public:
-	covter(vector<string>& vs) {
+	covter(vector<string>& vs):subN(sqrt(N)) {
+		if(subN*subN!=N) throw invalid_argument("covter: N is not a square");
+
 		memset(mpC,0,sizeof(mpC));
 		for(int i=0; i!=N; ++i)
 			strcpy(this->vs[i],vs[i].c_str());
@@ -227,12 +232,12 @@ public:
 				}
 		}
 
-		for(int i=0; i+3<=N; i+=3)
-			for(int j=0; j+3<=N; j+=3) {
+		for(int i=0; i+subN<=N; i+=subN)
+			for(int j=0; j+subN<=N; j+=subN) {
 				bool a[100];
 				memset(a,0,sizeof(a));
-				for(int i1=i; i1!=i+3; ++i1)
-					for(int j1=j; j1!=j+3; ++j1)
+				for(int i1=i; i1!=i+subN; ++i1)
+					for(int j1=j; j1!=j+subN; ++j1)
 						a[vs[i1][j1]]=true;
 				for(int t='A'; t!='A'+N; ++t)
 					if(!a[t]) {
