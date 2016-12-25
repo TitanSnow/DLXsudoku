@@ -155,6 +155,7 @@ public:
 #include<algorithm>
 #include<cmath>
 #include<stdexcept>
+#include<iterator>
 template<int N> class covter {
 	const int subN;
 	dlx solver;
@@ -170,15 +171,23 @@ template<int N> class covter {
 		return (i/subN)*subN+j/subN;
 	}
 	char vs[N][N+1];
+	vector<vector<string> > steps;
+	vector<string> get_this_step() {
+		vector<string> vs(N);
+		for(int i=0; i!=N; ++i)
+			copy(this->vs[i],this->vs[i]+N,back_inserter(vs[i]));
+		return vs;
+	}
 	void event_listener(int e,int line) {
 		switch(e) {
 		case dlx::select_line: {
 			const decision& dc=dcs[line];
 			vs[dc.i][dc.j]=dc.t;
+			steps.push_back(get_this_step());
 		}
 		break;
 		case dlx::unselect_line: {
-			// do nothing
+			steps.pop_back();
 		}
 		break;
 		}
@@ -272,6 +281,10 @@ public:
 		for(int i=0; i!=N; ++i)
 			copy(this->vs[i],this->vs[i]+N,vs[i].begin());
 	}
+
+	const vector<vector<string> >& get_steps() {
+		return steps;
+	}
 };
 
 #include<iostream>
@@ -311,6 +324,23 @@ public:
 			covter<9> cvt(vs);
 			if(kase++!=0) cout.put('\n');
 			pr();
+			char ch;
+			while(cin.get(ch)&&isspace(ch));
+			if(!cin) return;
+			if(ch!='?')
+				cin.unget();
+			else {
+				cin.get();
+				if(!cin) return;
+				const vector<vector<string> >& steps=cvt.get_steps();
+				for(int i=0; i!=steps.size(); ++i) {
+					this->pvs=&(steps[i]);
+					pr();
+					cout<<"--PRESS-----\n";
+					cin.get();
+					if(!cin) return;
+				}
+			}
 		}
 	}
 };
