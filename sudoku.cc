@@ -42,7 +42,16 @@ dlx::dlx():c_line(0),IGN((event_listener_t)0) {
 	root.line=0;
 }
 dlx::~dlx() {
-	// of course it is needed, however, i just don't wanna write it
+	for(node* i=root.r; i!=&root;) {
+		for(node* j=i->d; j!=i;) {
+			node* next=j->d;
+			free(j);
+			j=next;
+		}
+		node* next=i->r;
+		free(i);
+		i=next;
+	}
 }
 node* dlx::add_col() {
 	node* pn=(node*)malloc(sizeof(node));
