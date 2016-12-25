@@ -27,8 +27,6 @@ For more information, please refer to <http://unlicense.org/>
 
 */
 
-using namespace std;
-
 struct handler {
 	virtual void operator() (int,int) =0;
 	virtual ~handler() {}
@@ -77,11 +75,11 @@ public:
 		pn->line=0;
 		return pn;
 	}
-	int add_row(const vector<node*>& vs) {
+	int add_row(const std::vector<node*>& vs) {
 		node* first=NULL;
 		node* pre=NULL;
 		++c_line;
-		for(vector<node*>::const_iterator it(vs.begin()); it!=vs.end(); ++it) {
+		for(std::vector<node*>::const_iterator it(vs.begin()); it!=vs.end(); ++it) {
 			node* pn=(node*)malloc(sizeof(node));
 			if(first==NULL)
 				first=pn;
@@ -166,14 +164,14 @@ template<int N> class covter {
 		decision() {}
 		decision(int ni,int nj,char nt):i(ni),j(nj),t(nt) {}
 	};
-	vector<decision> dcs;
+	std::vector<decision> dcs;
 	int get_sub(int i,int j) {
 		return (i/subN)*subN+j/subN;
 	}
 	char vs[N][N+1];
-	vector<vector<string> > steps;
-	vector<string> get_this_step() {
-		vector<string> vs(N);
+	std::vector<std::vector<std::string> > steps;
+	std::vector<std::string> get_this_step() {
+		std::vector<std::string> vs(N);
 		for(int i=0; i!=N; ++i)
 			copy(this->vs[i],this->vs[i]+N,back_inserter(vs[i]));
 		return vs;
@@ -203,8 +201,8 @@ template<int N> class covter {
 	};
 	friend class my_handler;
 public:
-	covter(vector<string>& vs):subN(sqrt(N)) {
-		if(subN*subN!=N) throw invalid_argument("covter: N is not a square");
+	covter(std::vector<std::string>& vs):subN(sqrt(N)) {
+		if(subN*subN!=N) throw std::invalid_argument("covter: N is not a square");
 
 		memset(mpC,0,sizeof(mpC));
 		for(int i=0; i!=N; ++i)
@@ -221,7 +219,7 @@ public:
 			bool a[100];
 			memset(a,0,sizeof(a));
 			for(int j=0; j!=N; ++j)
-				a[vs[i][j]]=true;
+				a[(size_t)vs[i][j]]=true;
 			for(int t='A'; t!='A'+N; ++t)
 				if(!a[t]) {
 					node* tt=solver.add_col();
@@ -233,7 +231,7 @@ public:
 			bool a[100];
 			memset(a,0,sizeof(a));
 			for(int i=0; i!=N; ++i)
-				a[vs[i][j]]=true;
+				a[(size_t)vs[i][j]]=true;
 			for(int t='A'; t!='A'+N; ++t)
 				if(!a[t]) {
 					node* tt=solver.add_col();
@@ -247,7 +245,7 @@ public:
 				memset(a,0,sizeof(a));
 				for(int i1=i; i1!=i+subN; ++i1)
 					for(int j1=j; j1!=j+subN; ++j1)
-						a[vs[i1][j1]]=true;
+						a[(size_t)vs[i1][j1]]=true;
 				for(int t='A'; t!='A'+N; ++t)
 					if(!a[t]) {
 						node* tt=solver.add_col();
@@ -259,7 +257,7 @@ public:
 			for(int j=0; j!=N; ++j)
 				if(vs[i][j]=='-')
 					for(int t='A'; t!='A'+N; ++t) {
-						vector<node*> r;
+						std::vector<node*> r;
 						if(mpC[0][i][j]!=0) r.push_back(mpC[0][i][j]);
 						else continue;
 						if(mpC[1][i][t-'A']!=0) r.push_back(mpC[1][i][t-'A']);
@@ -269,7 +267,7 @@ public:
 						if(mpC[3][get_sub(i,j)][t-'A']!=0) r.push_back(mpC[3][get_sub(i,j)][t-'A']);
 						else continue;
 						int line=solver.add_row(r);
-						dcs.resize(max(line+1,(int)dcs.size()));
+						dcs.resize(std::max(line+1,(int)dcs.size()));
 						dcs[line]=decision(i,j,t);
 					}
 
@@ -282,7 +280,7 @@ public:
 			copy(this->vs[i],this->vs[i]+N,vs[i].begin());
 	}
 
-	const vector<vector<string> >& get_steps() {
+	const std::vector<std::vector<std::string> >& get_steps() {
 		return steps;
 	}
 };
@@ -290,29 +288,29 @@ public:
 #include<iostream>
 #include<cctype>
 class wrapper {
-	const vector<string>* pvs;
+	const std::vector<std::string>* pvs;
 	void pr() {
-		const vector<string>& vs=*pvs;
+		const std::vector<std::string>& vs=*pvs;
 		for(int i=0; i!=9; ++i) {
 			for(int j=0; j!=9; ++j)
-				cout.put(isupper(vs[i][j])?vs[i][j]-16:vs[i][j]);
-			cout.put('\n');
+				std::cout.put(isupper(vs[i][j])?vs[i][j]-16:vs[i][j]);
+			std::cout.put('\n');
 		}
-		//cout.flush();
+		//std::cout.flush();
 	}
 public:
 	wrapper() {
-		ios::sync_with_stdio(false);
-		//cin.tie(0);
+		std::ios::sync_with_stdio(false);
+		//std::cin.tie(0);
 		int kase=0;
 		while(1) {
-			vector<string> vs;
+			std::vector<std::string> vs;
 			this->pvs=&vs;
 			for(int i=0; i!=9; ++i) {
-				string st;
+				std::string st;
 				do {
-					cin>>st;
-					if(!cin) {
+					std::cin>>st;
+					if(!std::cin) {
 						if(st.size()==9) break;
 						return;
 					}
@@ -322,23 +320,23 @@ public:
 				vs.push_back(st);
 			}
 			covter<9> cvt(vs);
-			if(kase++!=0) cout.put('\n');
+			if(kase++!=0) std::cout.put('\n');
 			pr();
 			char ch;
-			while(cin.get(ch)&&isspace(ch));
-			if(!cin) return;
+			while(std::cin.get(ch)&&isspace(ch));
+			if(!std::cin) return;
 			if(ch!='?')
-				cin.unget();
+				std::cin.unget();
 			else {
-				cin.get();
-				if(!cin) return;
-				const vector<vector<string> >& steps=cvt.get_steps();
-				for(int i=0; i!=steps.size(); ++i) {
+				std::cin.get();
+				if(!std::cin) return;
+				const std::vector<std::vector<std::string> >& steps=cvt.get_steps();
+				for(std::vector<std::vector<std::string> >::size_type i=0; i!=steps.size(); ++i) {
 					this->pvs=&(steps[i]);
 					pr();
-					cout<<"--PRESS-----\n";
-					cin.get();
-					if(!cin) return;
+					std::cout<<"--PRESS-----\n";
+					std::cin.get();
+					if(!std::cin) return;
 				}
 			}
 		}
