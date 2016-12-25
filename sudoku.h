@@ -120,6 +120,13 @@ template<int N> class covter {
 public:
 	explicit covter(std::vector<std::string>& vs):subN(sqrt(N)) {
 		if(subN*subN!=N) throw std::invalid_argument("covter: N is not a square");
+		if(vs.size()!=N) throw std::invalid_argument("covter: vector size != N");
+		for(int i=0; i!=N; ++i) {
+			if(vs[i].size()!=N) throw std::invalid_argument("covter: string size != N");
+			for(int j=0; j!=N; ++j)
+				if(vs[i][j]!='-'&&(vs[i][j]<'A'||vs[i][j]>='A'+N))
+					throw std::invalid_argument("covter: invalid char");
+		}
 
 		memset(mpC,0,sizeof(mpC));
 		for(int i=0; i!=N; ++i)
