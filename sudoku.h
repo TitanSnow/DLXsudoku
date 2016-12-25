@@ -118,7 +118,7 @@ template<int N> class covter {
 	};
 	friend class my_handler;
 public:
-	covter(std::vector<std::string>& vs):subN(sqrt(N)) {
+	explicit covter(std::vector<std::string>& vs):subN(sqrt(N)) {
 		if(subN*subN!=N) throw std::invalid_argument("covter: N is not a square");
 
 		memset(mpC,0,sizeof(mpC));
