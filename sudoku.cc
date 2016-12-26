@@ -27,6 +27,7 @@ For more information, please refer to <http://unlicense.org/>
 
 */
 
+#include<cstdlib>
 #include"sudoku.h"
 
 handler::~handler() {}
@@ -45,16 +46,16 @@ dlx::~dlx() {
 	for(node* i=root.r; i!=&root;) {
 		for(node* j=i->d; j!=i;) {
 			node* next=j->d;
-			free(j);
+			std::free(j);
 			j=next;
 		}
 		node* next=i->r;
-		free(i);
+		std::free(i);
 		i=next;
 	}
 }
 node* dlx::add_col() {
-	node* pn=(node*)malloc(sizeof(node));
+	node* pn=(node*)std::malloc(sizeof(node));
 	pn->l=root.l;
 	pn->r=&root;
 	pn->u=pn;
@@ -71,7 +72,7 @@ int dlx::add_row(const std::vector<node*>& vs) {
 	node* pre=NULL;
 	++c_line;
 	for(std::vector<node*>::const_iterator it(vs.begin()); it!=vs.end(); ++it) {
-		node* pn=(node*)malloc(sizeof(node));
+		node* pn=(node*)std::malloc(sizeof(node));
 		if(first==NULL)
 			first=pn;
 		pn->l=pre;

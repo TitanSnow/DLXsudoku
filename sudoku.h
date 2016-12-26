@@ -27,7 +27,6 @@ For more information, please refer to <http://unlicense.org/>
 
 */
 
-#include<cstdlib>
 #include<vector>
 #include<string>
 #include<cstring>
@@ -90,7 +89,7 @@ template<int N> class covter {
 	std::vector<std::string> get_this_step() {
 		std::vector<std::string> vs(N);
 		for(int i=0; i!=N; ++i)
-			copy(this->vs[i],this->vs[i]+N,back_inserter(vs[i]));
+			std::copy(this->vs[i],this->vs[i]+N,std::back_inserter(vs[i]));
 		return vs;
 	}
 	void event_listener(int e,int line) {
@@ -118,7 +117,7 @@ template<int N> class covter {
 	};
 	friend class my_handler;
 public:
-	explicit covter(std::vector<std::string>& vs):subN(sqrt(N)) {
+	explicit covter(std::vector<std::string>& vs):subN(std::sqrt(N)) {
 		if(subN*subN!=N) throw std::invalid_argument("covter: N is not a square");
 		if(vs.size()!=N) throw std::invalid_argument("covter: vector size != N");
 		for(int i=0; i!=N; ++i) {
@@ -128,9 +127,9 @@ public:
 					throw std::invalid_argument("covter: invalid char");
 		}
 
-		memset(mpC,0,sizeof(mpC));
+		std::memset(mpC,0,sizeof(mpC));
 		for(int i=0; i!=N; ++i)
-			strcpy(this->vs[i],vs[i].c_str());
+			std::strcpy(this->vs[i],vs[i].c_str());
 
 		for(int i=0; i!=N; ++i)
 			for(int j=0; j!=N; ++j)
@@ -141,9 +140,9 @@ public:
 
 		for(int i=0; i!=N; ++i) {
 			bool a[100];
-			memset(a,0,sizeof(a));
+			std::memset(a,0,sizeof(a));
 			for(int j=0; j!=N; ++j)
-				a[(size_t)vs[i][j]]=true;
+				a[(std::size_t)vs[i][j]]=true;
 			for(int t='A'; t!='A'+N; ++t)
 				if(!a[t]) {
 					node* tt=solver.add_col();
@@ -153,9 +152,9 @@ public:
 
 		for(int j=0; j!=N; ++j) {
 			bool a[100];
-			memset(a,0,sizeof(a));
+			std::memset(a,0,sizeof(a));
 			for(int i=0; i!=N; ++i)
-				a[(size_t)vs[i][j]]=true;
+				a[(std::size_t)vs[i][j]]=true;
 			for(int t='A'; t!='A'+N; ++t)
 				if(!a[t]) {
 					node* tt=solver.add_col();
@@ -166,10 +165,10 @@ public:
 		for(int i=0; i+subN<=N; i+=subN)
 			for(int j=0; j+subN<=N; j+=subN) {
 				bool a[100];
-				memset(a,0,sizeof(a));
+				std::memset(a,0,sizeof(a));
 				for(int i1=i; i1!=i+subN; ++i1)
 					for(int j1=j; j1!=j+subN; ++j1)
-						a[(size_t)vs[i1][j1]]=true;
+						a[(std::size_t)vs[i1][j1]]=true;
 				for(int t='A'; t!='A'+N; ++t)
 					if(!a[t]) {
 						node* tt=solver.add_col();
@@ -201,7 +200,7 @@ public:
 		solver.solve();
 
 		for(int i=0; i!=N; ++i)
-			copy(this->vs[i],this->vs[i]+N,vs[i].begin());
+			std::copy(this->vs[i],this->vs[i]+N,vs[i].begin());
 	}
 
 	const std::vector<std::vector<std::string> >& get_steps() {

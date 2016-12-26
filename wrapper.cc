@@ -36,7 +36,7 @@ class wrapper {
 		const std::vector<std::string>& vs=*pvs;
 		for(int i=0; i!=9; ++i) {
 			for(int j=0; j!=9; ++j)
-				std::cout.put(isupper(vs[i][j])?vs[i][j]-16:vs[i][j]);
+				std::cout.put(std::isupper(vs[i][j])?vs[i][j]-16:vs[i][j]);
 			std::cout.put('\n');
 		}
 		//std::cout.flush();
@@ -59,14 +59,14 @@ public:
 					}
 				} while(st.size()!=9);
 				for(int i=0;i!=9;++i)
-					if(isdigit(st[i]))st[i]+=16;
+					if(std::isdigit(st[i]))st[i]+=16;
 				vs.push_back(st);
 			}
 			covter<9> cvt(vs);
 			if(kase++!=0) std::cout.put('\n');
 			pr();
 			char ch;
-			while(std::cin.get(ch)&&isspace(ch));
+			while(std::cin.get(ch)&&std::isspace(ch));
 			if(!std::cin) return;
 			if(ch!='?')
 				std::cin.unget();
