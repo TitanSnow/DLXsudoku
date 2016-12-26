@@ -81,12 +81,12 @@ template<int N> class covter {
 		decision(int ni,int nj,char nt):i(ni),j(nj),t(nt) {}
 	};
 	std::vector<decision> dcs;
-	int get_sub(int i,int j) {
+	int get_sub(int i,int j) const{
 		return (i/subN)*subN+j/subN;
 	}
 	char vs[N][N+1];
 	std::vector<std::vector<std::string> > steps;
-	std::vector<std::string> get_this_step() {
+	std::vector<std::string> get_this_step() const{
 		std::vector<std::string> vs(N);
 		for(int i=0; i!=N; ++i)
 			std::copy(this->vs[i],this->vs[i]+N,std::back_inserter(vs[i]));
@@ -203,7 +203,7 @@ public:
 			std::copy(this->vs[i],this->vs[i]+N,vs[i].begin());
 	}
 
-	const std::vector<std::vector<std::string> >& get_steps() {
+	const std::vector<std::vector<std::string> >& get_steps() const{
 		return steps;
 	}
 };

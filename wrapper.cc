@@ -32,7 +32,7 @@ For more information, please refer to <http://unlicense.org/>
 #include<cctype>
 class wrapper {
 	const std::vector<std::string>* pvs;
-	void pr() {
+	void pr() const{
 		const std::vector<std::string>& vs=*pvs;
 		for(int i=0; i!=9; ++i) {
 			for(int j=0; j!=9; ++j)
