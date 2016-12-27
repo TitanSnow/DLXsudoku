@@ -136,3 +136,27 @@ bool dlx::solve() {
 
 	return false;
 }
+void dlx::dfs_solution_tree() {
+	if(root.r==&root) {
+		if(event_listener!=IGN) event_listener->operator()(dep_end_success,0);
+		return;
+	}
+
+	node* c=root.r;
+	for(node* i=root.r; i!=&root; i=i->r)
+		if(i->s<c->s)
+			c=i;
+
+	rmcol(c);
+	for(node* i=c->d; i!=c; i=i->d) {
+		for(node* j=i->r; j!=i; j=j->r) rmcol(j->c);
+		if(event_listener!=IGN) event_listener->operator()(select_line,i->line);
+		dfs_solution_tree();
+		for(node* j=i->l; j!=i; j=j->l) recol(j->c);
+		if(event_listener!=IGN) event_listener->operator()(unselect_line,i->line);
+	}
+	recol(c);
+
+	if(event_listener!=IGN) event_listener->operator()(loop_end,0);
+	return;
+}

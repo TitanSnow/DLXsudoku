@@ -52,7 +52,13 @@ class dlx {
 	node root;
 	int c_line;
 public:
-	enum event {select_line,unselect_line};
+	enum event
+		{
+			select_line,
+			unselect_line,
+			dep_end_success,
+			loop_end
+		};
 	typedef handler *event_listener_t;
 	const event_listener_t IGN;
 private:
@@ -68,6 +74,7 @@ private:
 	void recol(node* c);
 public:
 	bool solve();
+	void dfs_solution_tree();
 };
 
 template<int N> class covter {
@@ -92,19 +99,39 @@ template<int N> class covter {
 			std::copy(this->vs[i],this->vs[i]+N,std::back_inserter(vs[i]));
 		return vs;
 	}
+	const bool record_step;
+	const bool dfs_all;
+	int c_ans;
 	void event_listener(int e,int line) {
-		switch(e) {
-		case dlx::select_line: {
-			const decision& dc=dcs[line];
-			vs[dc.i][dc.j]=dc.t;
-			steps.push_back(get_this_step());
-		}
-		break;
-		case dlx::unselect_line: {
-			steps.pop_back();
-		}
-		break;
-		}
+		if(record_step&&!dfs_all)
+			switch(e) {
+			case dlx::select_line: {
+				const decision& dc=dcs[line];
+				vs[dc.i][dc.j]=dc.t;
+				steps.push_back(get_this_step());
+			}
+			break;
+			case dlx::unselect_line: {
+				steps.pop_back();
+			}
+			break;
+			}
+		else if(!record_step)
+			switch(e) {
+			case dlx::select_line: {
+				const decision& dc=dcs[line];
+				vs[dc.i][dc.j]=dc.t;
+			}
+			break;
+			case dlx::dep_end_success: {
+				++c_ans;
+			}
+			break;
+			}
+		else
+			switch(e) {
+				// TODO: add code for recording tree
+			}
 	}
 	struct my_handler:public handler {
 	private:
@@ -117,7 +144,7 @@ template<int N> class covter {
 	};
 	friend class my_handler;
 public:
-	explicit covter(std::vector<std::string>& vs):subN(std::sqrt(N)) {
+	explicit covter(std::vector<std::string>& vs,bool record_step=true,bool dfs_all=false):subN(std::sqrt(N)),record_step(record_step),dfs_all(dfs_all),c_ans(0) {
 		if(subN*subN!=N) throw std::invalid_argument("covter: N is not a square");
 		if(vs.size()!=N) throw std::invalid_argument("covter: vector size != N");
 		for(int i=0; i!=N; ++i) {
@@ -197,15 +224,26 @@ public:
 		my_handler el;
 		el.pare=this;
 		solver.add_event_listener(&el);
-		solver.solve();
+		if(!dfs_all)
+			solver.solve();
+		else
+			solver.dfs_solution_tree();
 
 		for(int i=0; i!=N; ++i)
 			std::copy(this->vs[i],this->vs[i]+N,vs[i].begin());
 	}
 
 	const std::vector<std::vector<std::string> >& get_steps() const{
+		if(!record_step||dfs_all)
+			throw std::logic_error("covter: has not recorded steps or recorded steps as a tree");
 		return steps;
 	}
+	int get_numof_solutions() const{
+		if(!dfs_all)
+			throw std::logic_error("covter: has not dfs solution tree");
+		return c_ans;
+	}
+	// TODO: add func to return solution tree
 };
 
 #endif

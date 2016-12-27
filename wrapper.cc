@@ -62,9 +62,15 @@ public:
 					if(std::isdigit(st[i]))st[i]+=16;
 				vs.push_back(st);
 			}
+			// TODO: use "true,true" after it comes up -----
+			std::vector<std::string> vs2(vs);
 			covter<9> cvt(vs);
+			covter<9> cvt2(vs2,false,true);
+			int c_ans=cvt2.get_numof_solutions();
+			// ----- end TODO
 			if(kase++!=0) std::cout.put('\n');
 			pr();
+			std::cout<<"--THERE'RE "<<c_ans<<" SOLUTION(S)-----\n";
 			char ch;
 			while(std::cin.get(ch)&&std::isspace(ch));
 			if(!std::cin) return;
