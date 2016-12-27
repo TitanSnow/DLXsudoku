@@ -34,6 +34,7 @@ For more information, please refer to <http://unlicense.org/>
 #include<cmath>
 #include<stdexcept>
 #include<iterator>
+#include<memory>
 
 #ifndef SUDOKU_H
 #define SUDOKU_H
@@ -78,6 +79,16 @@ public:
 };
 
 template<int N> class covter {
+public:
+	typedef std::vector<std::vector<std::string> > solution_t;
+	struct solution_tree_node_t;
+	typedef std::shared_ptr<solution_tree_node_t> solution_tree_node_ptr;
+	struct solution_tree_node_t {
+		std::auto_ptr<solution_t> p_solution;
+		solution_tree_node_ptr parent;
+		std::vector<solution_tree_node_ptr> children;
+	};
+private:
 	const int subN;
 	dlx solver;
 	node* mpC[4][N][N];
@@ -92,7 +103,7 @@ template<int N> class covter {
 		return (i/subN)*subN+j/subN;
 	}
 	char vs[N][N+1];
-	std::vector<std::vector<std::string> > steps;
+	solution_t steps;
 	std::vector<std::string> get_this_step() const{
 		std::vector<std::string> vs(N);
 		for(int i=0; i!=N; ++i)
@@ -102,6 +113,8 @@ template<int N> class covter {
 	const bool record_step;
 	const bool dfs_all;
 	int c_ans;
+	solution_tree_node_ptr ptroot;
+	solution_tree_node_ptr ptcur;
 	void event_listener(int e,int line) {
 		if(record_step&&!dfs_all)
 			switch(e) {
@@ -130,7 +143,28 @@ template<int N> class covter {
 			}
 		else
 			switch(e) {
-				// TODO: add code for recording tree
+			case dlx::select_line: {
+				const decision& dc=dcs[line];
+				vs[dc.i][dc.j]=dc.t;
+				steps.push_back(get_this_step());
+				ptcur->children.push_back(solution_tree_node_ptr());
+				ptcur->children.back()->parent=ptcur;
+				ptcur=ptcur->children.back();
+			}
+			break;
+			case dlx::unselect_line: {
+				steps.pop_back();
+			}
+			break;
+			case dlx::loop_end: {
+				ptcur=ptcur->parent;
+			}
+			break;
+			case dlx::dep_end_success: {
+				ptcur->p_solution.reset(new solution_t(steps));
+				++c_ans;
+			}
+			break;
 			}
 	}
 	struct my_handler:public handler {
@@ -144,7 +178,9 @@ template<int N> class covter {
 	};
 	friend class my_handler;
 public:
-	explicit covter(std::vector<std::string>& vs,bool record_step=true,bool dfs_all=false):subN(std::sqrt(N)),record_step(record_step),dfs_all(dfs_all),c_ans(0) {
+	explicit covter(std::vector<std::string>& vs,bool record_step=true,bool dfs_all=false):subN(std::sqrt(N)),record_step(record_step),dfs_all(dfs_all),c_ans(0),ptroot(new solution_tree_node_t) {
+		ptcur=ptroot;
+
 		if(subN*subN!=N) throw std::invalid_argument("covter: N is not a square");
 		if(vs.size()!=N) throw std::invalid_argument("covter: vector size != N");
 		for(int i=0; i!=N; ++i) {
@@ -233,7 +269,7 @@ public:
 			std::copy(this->vs[i],this->vs[i]+N,vs[i].begin());
 	}
 
-	const std::vector<std::vector<std::string> >& get_steps() const{
+	const solution_t& get_steps() const{
 		if(!record_step||dfs_all)
 			throw std::logic_error("covter: has not recorded steps or recorded steps as a tree");
 		return steps;
@@ -243,7 +279,14 @@ public:
 			throw std::logic_error("covter: has not dfs solution tree");
 		return c_ans;
 	}
-	// TODO: add func to return solution tree
+	solution_tree_node_ptr get_solution_tree() {
+		if(!ptroot)
+			throw std::logic_error("covter: \"get_solution_tree\" cannot be called twice");
+		solution_tree_node_ptr root(ptroot);
+		ptroot=nullptr;
+		ptcur=nullptr;
+		return root;
+	}
 };
 
 #endif
