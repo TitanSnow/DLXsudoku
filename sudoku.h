@@ -35,6 +35,7 @@ For more information, please refer to <http://unlicense.org/>
 #include<stdexcept>
 #include<iterator>
 #include<memory>
+#include<exception>
 
 #ifndef SUDOKU_H
 #define SUDOKU_H
@@ -58,7 +59,8 @@ public:
 			select_line,
 			unselect_line,
 			dep_end_success,
-			loop_end
+			loop_end,
+			select_col
 		};
 	typedef handler *event_listener_t;
 	const event_listener_t IGN;
@@ -75,7 +77,8 @@ private:
 	void recol(node* c);
 public:
 	bool solve();
-	void dfs_solution_tree();
+	void dfs_solution_tree(bool dfs_col=false,bool dfs_row=true);
+	class success_exception:public std::exception {};
 };
 
 template<int N> class covter {

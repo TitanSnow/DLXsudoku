@@ -136,27 +136,42 @@ bool dlx::solve() {
 
 	return false;
 }
-void dlx::dfs_solution_tree() {
+void dlx::dfs_solution_tree(bool dfs_col,bool dfs_row) {
 	if(root.r==&root) {
 		if(event_listener!=IGN) event_listener->operator()(dep_end_success,0);
-		return;
+		if(dfs_row) return;
+		throw success_exception();
 	}
 
 	node* c=root.r;
-	for(node* i=root.r; i!=&root; i=i->r)
-		if(i->s<c->s)
-			c=i;
+	if(!dfs_col)
+		for(node* i=root.r; i!=&root; i=i->r)
+			if(i->s<c->s)
+				c=i;
 
-	rmcol(c);
-	for(node* i=c->d; i!=c; i=i->d) {
-		for(node* j=i->r; j!=i; j=j->r) rmcol(j->c);
-		if(event_listener!=IGN) event_listener->operator()(select_line,i->line);
-		dfs_solution_tree();
-		for(node* j=i->l; j!=i; j=j->l) recol(j->c);
-		if(event_listener!=IGN) event_listener->operator()(unselect_line,i->line);
+	bool b_throw=false;
+	for(int i=0; (dfs_col?c!=&root:i!=1); ++i,c=c->r) {
+		rmcol(c);
+		if(dfs_col&&event_listener!=IGN) event_listener->operator()(select_col,0);
+		bool continue_loop=true;
+		for(node* i=c->d; i!=c&&continue_loop; i=i->d) {
+			for(node* j=i->r; j!=i; j=j->r) rmcol(j->c);
+			if(event_listener!=IGN) event_listener->operator()(select_line,i->line);
+			try{
+				dfs_solution_tree(dfs_col,dfs_row);
+			} catch (success_exception) {
+				continue_loop=false;
+			}
+			for(node* j=i->l; j!=i; j=j->l) recol(j->c);
+			if(event_listener!=IGN) event_listener->operator()(unselect_line,i->line);
+		}
+		recol(c);
+
+		if(event_listener!=IGN) event_listener->operator()(loop_end,0);
+		if(!continue_loop)
+			b_throw=true;
 	}
-	recol(c);
-
-	if(event_listener!=IGN) event_listener->operator()(loop_end,0);
-	return;
+	if(dfs_col&&event_listener!=IGN) event_listener->operator()(loop_end,0);
+	if(!b_throw) return;
+	throw success_exception();
 }
