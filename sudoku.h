@@ -80,11 +80,11 @@ public:
 
 template<int N> class covter {
 public:
-	typedef std::vector<std::vector<std::string> > solution_t;
+	typedef std::vector<std::vector<std::string> > steps_t;
 	struct solution_tree_node_t;
 	typedef std::shared_ptr<solution_tree_node_t> solution_tree_node_ptr;
 	struct solution_tree_node_t {
-		std::auto_ptr<solution_t> p_solution;
+		std::auto_ptr<steps_t> p_solution;
 		solution_tree_node_ptr parent;
 		std::vector<solution_tree_node_ptr> children;
 	};
@@ -103,7 +103,7 @@ private:
 		return (i/subN)*subN+j/subN;
 	}
 	char vs[N][N+1];
-	solution_t steps;
+	steps_t steps;
 	std::vector<std::string> get_this_step() const{
 		std::vector<std::string> vs(N);
 		for(int i=0; i!=N; ++i)
@@ -161,7 +161,7 @@ private:
 			}
 			break;
 			case dlx::dep_end_success: {
-				ptcur->p_solution.reset(new solution_t(steps));
+				ptcur->p_solution.reset(new steps_t(steps));
 				++c_ans;
 			}
 			break;
@@ -269,7 +269,7 @@ public:
 			std::copy(this->vs[i],this->vs[i]+N,vs[i].begin());
 	}
 
-	const solution_t& get_steps() const{
+	const steps_t& get_steps() const{
 		if(!record_step||dfs_all)
 			throw std::logic_error("covter: has not recorded steps or recorded steps as a tree");
 		return steps;
