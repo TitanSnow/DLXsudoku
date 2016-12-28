@@ -80,7 +80,8 @@ public:
 
 template<int N> class covter {
 public:
-	typedef std::vector<std::vector<std::string> > steps_t;
+	typedef std::vector<std::string> board_t;
+	typedef std::vector<board_t> steps_t;
 	struct solution_tree_node_t;
 	typedef std::shared_ptr<solution_tree_node_t> solution_tree_node_ptr;
 	struct solution_tree_node_t {
@@ -104,8 +105,8 @@ private:
 	}
 	char vs[N][N+1];
 	steps_t steps;
-	std::vector<std::string> get_this_step() const{
-		std::vector<std::string> vs(N);
+	board_t get_this_step() const{
+		board_t vs(N);
 		for(int i=0; i!=N; ++i)
 			std::copy(this->vs[i],this->vs[i]+N,std::back_inserter(vs[i]));
 		return vs;
@@ -178,7 +179,7 @@ private:
 	};
 	friend class my_handler;
 public:
-	explicit covter(std::vector<std::string>& vs,bool record_step=true,bool dfs_all=false):subN(std::sqrt(N)),record_step(record_step),dfs_all(dfs_all),c_ans(0),ptroot(new solution_tree_node_t) {
+	explicit covter(board_t& vs,bool record_step=true,bool dfs_all=false):subN(std::sqrt(N)),record_step(record_step),dfs_all(dfs_all),c_ans(0),ptroot(new solution_tree_node_t) {
 		ptcur=ptroot;
 
 		if(subN*subN!=N) throw std::invalid_argument("covter: N is not a square");
