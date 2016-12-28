@@ -128,6 +128,8 @@ private:
 			}
 			break;
 			case dlx::unselect_line: {
+				const decision& dc=dcs[line];
+				vs[dc.i][dc.j]='-';
 				steps.pop_back();
 			}
 			break;
@@ -153,12 +155,14 @@ private:
 			}
 			// no break
 			case dlx::select_col: {
-				ptcur->children.push_back(solution_tree_node_ptr());
+				ptcur->children.push_back(std::shared_ptr<solution_tree_node_t>(new solution_tree_node_t()));
 				ptcur->children.back()->parent=ptcur;
 				ptcur=ptcur->children.back();
 			}
 			break;
 			case dlx::unselect_line: {
+				const decision& dc=dcs[line];
+				vs[dc.i][dc.j]='-';
 				steps.pop_back();
 			}
 			//no break
@@ -195,7 +199,7 @@ public:
 		dfs_col(dfs_col),
 		dfs_row(dfs_row),
 		c_ans(0),
-		ptroot(new solution_tree_node_t)
+		ptroot(new solution_tree_node_t())
 	{
 		ptcur=ptroot;
 
