@@ -103,12 +103,9 @@ private:
 	int get_sub(int i,int j) const{
 		return (i/subN)*subN+j/subN;
 	}
-	char vs[N][N+1];
+	board_t& vs;
 	steps_t steps;
-	board_t get_this_step() const{
-		board_t vs(N);
-		for(int i=0; i!=N; ++i)
-			std::copy(this->vs[i],this->vs[i]+N,std::back_inserter(vs[i]));
+	const board_t& get_this_step() const{
 		return vs;
 	}
 	const bool record_step;
@@ -179,7 +176,7 @@ private:
 	};
 	friend class my_handler;
 public:
-	explicit covter(board_t& vs,bool record_step=true,bool dfs_all=false):subN(std::sqrt(N)),record_step(record_step),dfs_all(dfs_all),c_ans(0),ptroot(new solution_tree_node_t) {
+	explicit covter(board_t& vs,bool record_step=true,bool dfs_all=false):vs(vs),subN(std::sqrt(N)),record_step(record_step),dfs_all(dfs_all),c_ans(0),ptroot(new solution_tree_node_t) {
 		ptcur=ptroot;
 
 		if(subN*subN!=N) throw std::invalid_argument("covter: N is not a square");
@@ -192,8 +189,6 @@ public:
 		}
 
 		std::memset(mpC,0,sizeof(mpC));
-		for(int i=0; i!=N; ++i)
-			std::strcpy(this->vs[i],vs[i].c_str());
 
 		for(int i=0; i!=N; ++i)
 			for(int j=0; j!=N; ++j)
@@ -265,9 +260,6 @@ public:
 			solver.solve();
 		else
 			solver.dfs_solution_tree();
-
-		for(int i=0; i!=N; ++i)
-			std::copy(this->vs[i],this->vs[i]+N,vs[i].begin());
 	}
 
 	const steps_t& get_steps() const{
