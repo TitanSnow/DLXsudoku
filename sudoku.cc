@@ -166,12 +166,11 @@ void dlx::dfs_solution_tree(bool dfs_col,bool dfs_row) {
 			if(event_listener!=IGN) event_listener->operator()(unselect_line,i->line);
 		}
 		recol(c);
+		if(dfs_col&&event_listener!=IGN) event_listener->operator()(unselect_col,0);
 
-		if(event_listener!=IGN) event_listener->operator()(loop_end,0);
 		if(!continue_loop)
 			b_throw=true;
 	}
-	if(dfs_col&&event_listener!=IGN) event_listener->operator()(loop_end,0);
 	if(!b_throw) return;
 	throw success_exception();
 }

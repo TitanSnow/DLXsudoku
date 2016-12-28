@@ -36,6 +36,7 @@ For more information, please refer to <http://unlicense.org/>
 #include<iterator>
 #include<memory>
 #include<exception>
+#include<set>
 
 #ifndef SUDOKU_H
 #define SUDOKU_H
@@ -56,11 +57,11 @@ class dlx {
 public:
 	enum event
 		{
+			dep_end_success,
 			select_line,
 			unselect_line,
-			dep_end_success,
-			loop_end,
-			select_col
+			select_col,
+			unselect_col
 		};
 	typedef handler *event_listener_t;
 	const event_listener_t IGN;
@@ -112,10 +113,11 @@ private:
 		return vs;
 	}
 	const bool record_step;
-	const bool dfs_all;
+	const bool dfs_all,dfs_col,dfs_row;
 	int c_ans;
 	solution_tree_node_ptr ptroot;
 	solution_tree_node_ptr ptcur;
+	std::set<board_t> anss;
 	void event_listener(int e,int line) {
 		if(record_step&&!dfs_all)
 			switch(e) {
@@ -148,6 +150,9 @@ private:
 				const decision& dc=dcs[line];
 				vs[dc.i][dc.j]=dc.t;
 				steps.push_back(get_this_step());
+			}
+			// no break
+			case dlx::select_col: {
 				ptcur->children.push_back(solution_tree_node_ptr());
 				ptcur->children.back()->parent=ptcur;
 				ptcur=ptcur->children.back();
@@ -156,14 +161,17 @@ private:
 			case dlx::unselect_line: {
 				steps.pop_back();
 			}
-			break;
-			case dlx::loop_end: {
+			//no break
+			case dlx::unselect_col: {
 				ptcur=ptcur->parent;
 			}
 			break;
 			case dlx::dep_end_success: {
 				ptcur->p_solution.reset(new steps_t(steps));
-				++c_ans;
+				if(dfs_col)
+					anss.insert(steps.back());
+				else
+					++c_ans;
 			}
 			break;
 			}
@@ -179,7 +187,16 @@ private:
 	};
 	friend class my_handler;
 public:
-	explicit covter(board_t& vs,bool record_step=true,bool dfs_all=false):vs(vs),subN(std::sqrt(N)),record_step(record_step),dfs_all(dfs_all),c_ans(0),ptroot(new solution_tree_node_t) {
+	explicit covter(board_t& vs,bool record_step=true,bool dfs_all=false,bool dfs_col=false,bool dfs_row=true):
+		vs(vs),
+		subN(std::sqrt(N)),
+		record_step(record_step),
+		dfs_all(dfs_all),
+		dfs_col(dfs_col),
+		dfs_row(dfs_row),
+		c_ans(0),
+		ptroot(new solution_tree_node_t)
+	{
 		ptcur=ptroot;
 
 		if(subN*subN!=N) throw std::invalid_argument("covter: N is not a square");
@@ -262,7 +279,9 @@ public:
 		if(!dfs_all)
 			solver.solve();
 		else
-			solver.dfs_solution_tree();
+			try{
+				solver.dfs_solution_tree(dfs_col,dfs_row);
+			} catch (dlx::success_exception) {}
 	}
 
 	const steps_t& get_steps() const{
@@ -273,7 +292,7 @@ public:
 	int get_numof_solutions() const{
 		if(!dfs_all)
 			throw std::logic_error("covter: has not dfs solution tree");
-		return c_ans;
+		return (dfs_col?anss.size():c_ans);
 	}
 	solution_tree_node_ptr get_solution_tree() {
 		if(!ptroot)
