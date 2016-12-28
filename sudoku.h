@@ -283,8 +283,8 @@ public:
 		if(!ptroot)
 			throw std::logic_error("covter: \"get_solution_tree\" cannot be called twice");
 		solution_tree_node_ptr root(ptroot);
-		ptroot=nullptr;
-		ptcur=nullptr;
+		ptroot=0;
+		ptcur=0;
 		return root;
 	}
 };
