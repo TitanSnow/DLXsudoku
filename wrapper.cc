@@ -27,9 +27,27 @@ For more information, please refer to <http://unlicense.org/>
 
 */
 
+const char too_many_error[]=
+"--THERE'RE TOO MANY SOLUTIONS!!!-----\n"\
+"!!!-------------------------------!!!\n"\
+"---!!!-------------------------!!!---\n"\
+"------!!!-------------------!!!------\n"\
+"---------!!!-------------!!!---------\n"\
+"------------!!!-------!!!------------\n"\
+"---------------!!!-!!!---------------\n"\
+"-----------------!!!-----------------\n"\
+"---------------!!!-!!!---------------\n"\
+"------------!!!-------!!!------------\n"\
+"---------!!!-------------!!!---------\n"\
+"------!!!-------------------!!!------\n"\
+"---!!!-------------------------!!!---\n"\
+"!!!-------------------------------!!!\n";
+
 #include"sudoku.h"
 #include<iostream>
 #include<cctype>
+#include<thread>
+#include<chrono>
 class wrapper {
 	const std::vector<std::string>* pvs;
 	void pr() const{
@@ -62,12 +80,22 @@ public:
 					if(std::isdigit(st[i]))st[i]+=16;
 				vs.push_back(st);
 			}
-			// TODO: use "true,true" after it comes up -----
 			std::vector<std::string> vs2(vs);
+			int c_ans=-1;
+			std::thread th1([&c_ans,&vs2]() {
+				covter<9> cvt2(vs2,false,true);
+				c_ans=cvt2.get_numof_solutions();
+			});
+			std::thread th2([&c_ans]() {
+				std::this_thread::sleep_for(std::chrono::seconds(1));
+				if(c_ans!=-1) return;
+				std::cout<<too_many_error;
+				std::cout.flush();
+				std::terminate();
+			});
+			th2.detach();
 			covter<9> cvt(vs);
-			covter<9> cvt2(vs2,false,true);
-			int c_ans=cvt2.get_numof_solutions();
-			// ----- end TODO
+			th1.join();
 			if(kase++!=0) std::cout.put('\n');
 			pr();
 			std::cout<<"--THERE'RE "<<c_ans<<" SOLUTION(S)-----\n";
