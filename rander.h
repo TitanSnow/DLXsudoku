@@ -92,8 +92,7 @@ public:
 		covter<N>(vs,false);
 		while(level(vs)<lowline) {
 			board_t vs2;
-			int i;
-			for(i=0;i!=10;++i) {
+			for(;;) {
 				vs2=vs;
 				int mi,mj;
 				mi=get_randomer().randint(0,N);
@@ -103,7 +102,6 @@ public:
 				covter<N> cvt(vs3,false,true);
 				if(cvt.get_numof_solutions()==1) break;
 			}
-			if(i==10) throw std::runtime_error("rander: cannot reach the lowline");
 			vs=vs2;
 		}
 		return vs;
