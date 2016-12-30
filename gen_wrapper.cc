@@ -27,9 +27,25 @@ For more information, please refer to <http://unlicense.org/>
 
 */
 
+const char timeout_error[]=
+"--TIMEOUT. MAY LOWLINE BE SET TOO HIGH-----\n"\
+"!!!!-----------------------------------!!!!\n"\
+"----!!!!---------------------------!!!!----\n"\
+"--------!!!!-------------------!!!!--------\n"\
+"------------!!!!-----------!!!!------------\n"\
+"----------------!!!!---!!!!----------------\n"\
+"-------------------!!!!!-------------------\n"\
+"----------------!!!!---!!!!----------------\n"\
+"------------!!!!-----------!!!!------------\n"\
+"--------!!!!-------------------!!!!--------\n"\
+"----!!!!---------------------------!!!!----\n"\
+"!!!!-----------------------------------!!!!\n";
+
 #include"rander.h"
 #include<iostream>
 #include<cctype>
+#include<thread>
+#include<chrono>
 
 void pr(const std::vector<std::string>& vs) {
 	for(int i=0; i!=9; ++i) {
@@ -55,6 +71,12 @@ int main()
 	std::cin>>lowline;
 	rander<9> rd;
 	if(seed!=-1) rd.randomer=rand_maker(seed);
+	std::thread([]() {
+		std::this_thread::sleep_for(std::chrono::seconds(1));
+		std::cout<<timeout_error;
+		std::cout.flush();
+		std::terminate();
+	}).detach();
 	pr(rd.generate(lowline));
 	std::cout<<"--SEED "<<rd.randomer.get_seed()<<"-----\n";
 	return 0;
