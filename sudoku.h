@@ -89,7 +89,7 @@ public:
 	struct solution_tree_node_t;
 	typedef std::shared_ptr<solution_tree_node_t> solution_tree_node_ptr;
 	struct solution_tree_node_t {
-		std::auto_ptr<steps_t> p_solution;
+		std::unique_ptr<steps_t> p_solution;
 		solution_tree_node_ptr parent;
 		std::vector<solution_tree_node_ptr> children;
 	};
