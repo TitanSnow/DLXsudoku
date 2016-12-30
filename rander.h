@@ -72,12 +72,8 @@ private:
 	std::uintmax_t level(board_t vs) const{
 		std::uintmax_t ans=1;
 		typedef typename covter<N>::solution_tree_node_ptr solution_tree_node_ptr;
-		covter<N>* pcvt;
-		try{
-			pcvt=new covter<N>(vs,true,true,false,false);
-		} catch(dlx::success_exception) {}
-		solution_tree_node_ptr p=pcvt->get_solution_tree();
-		delete pcvt;
+		covter<N> cvt(vs,true,true,false,false);
+		solution_tree_node_ptr p=cvt.get_solution_tree();
 		while(!p->children.empty()){
 			ans*=(p->children.size()+1);
 			p=p->children.back();
