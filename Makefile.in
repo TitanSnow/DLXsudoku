@@ -1,0 +1,6 @@
+all: sudoku gen
+sudoku: sudoku.cc wrapper.cc sudoku.h
+	$(cp) sudoku.cc wrapper.cc -o sudoku $(opt)
+gen: sudoku.cc gen_wrapper.cc sudoku.h rander.h
+	$(cp) sudoku.cc gen_wrapper.cc -o gen $(opt)
+.PHONY: all

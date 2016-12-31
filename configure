@@ -1,0 +1,68 @@
+#!/bin/sh
+fn=test$$
+cat>$fn.cc<<EOF
+#include<thread>
+int main()
+{
+	std::thread([]() {return;}).join();
+	return 0;
+}
+EOF
+
+g++ -v>/dev/null 2>&1
+if test $? -eq 0;then
+	echo 'Select g++ to compile'
+	cp=g++
+else
+	c++ -v>/dev/null 2>&1
+	if test $? -ne 0;then
+		echo 'C++ compiler not found'
+		exit
+	fi
+	echo 'Select c++ to compile'
+	cp=c++
+fi
+
+testit()
+{
+	$cp $fn.cc -o $fn.out $opt>/dev/null 2>&1
+	rev=$?
+	if test $rev -ne 0;then
+		return $rev
+	else
+		./$fn.out>/dev/null 2>&1
+		rev=$?
+		return $rev
+	fi
+}
+outit()
+{
+	echo "cp=$cp">Makefile
+	echo "opt=$opt">>Makefile
+	cat Makefile.in>>Makefile
+	echo "Generated Makefile with compiler=$cp & option=$opt"
+	rm $fn.cc>/dev/null 2>&1
+	rm $fn.out>/dev/null 2>&1
+	exit
+}
+opt=
+testit
+if test $? -eq 0;then
+	outit
+fi
+opt='-std=c++11'
+testit
+if test $? -eq 0;then
+	outit
+fi
+opt='-lpthread'
+if test $? -eq 0;then
+	outit
+fi
+opt='-std=c++11 -lpthread'
+if test $? -eq 0;then
+	outit
+fi
+echo 'Fail!!! May compiler does not support C++11 that is needed?'
+rm $fn.cc>/dev/null 2>&1
+rm $fn.out>/dev/null 2>&1
