@@ -56,10 +56,12 @@ if test $? -eq 0;then
 	outit
 fi
 opt='-lpthread'
+testit
 if test $? -eq 0;then
 	outit
 fi
 opt='-std=c++11 -lpthread'
+testit
 if test $? -eq 0;then
 	outit
 fi
