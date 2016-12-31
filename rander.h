@@ -34,6 +34,9 @@ For more information, please refer to <http://unlicense.org/>
 #include<iterator>
 #include<algorithm>
 
+#ifndef RANDER_H
+#define RANDER_H
+
 class rand_maker {
 protected:
 	int seed;
@@ -107,3 +110,5 @@ public:
 		return vs;
 	}
 };
+
+#endif
