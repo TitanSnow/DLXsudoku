@@ -85,13 +85,18 @@ private:
 	}
 public:
 	board_t generate(std::uintmax_t lowline) const{
-		board_t vs;
+		board_t vs,prev,cp;
 		std::fill_n(std::back_inserter(vs),N,std::string(N,'-'));
-		int fi,fj,fa;
-		fi=get_randomer().randint(0,N);
-		fj=get_randomer().randint(0,N);
-		fa=get_randomer().randint(0,N);
-		vs[fi][fj]=fa+'A';
+		do {
+			prev=vs;
+			int fi,fj,fa;
+			fi=get_randomer().randint(0,N);
+			fj=get_randomer().randint(0,N);
+			fa=get_randomer().randint(0,N);
+			vs[fi][fj]=fa+'A';
+			cp=vs;
+		} while(covter<N>(cp,false).get_numof_solutions());
+		vs=prev;
 		covter<N>(vs,false);
 		while(level(vs)<lowline) {
 			board_t vs2;
