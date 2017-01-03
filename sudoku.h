@@ -280,9 +280,9 @@ public:
 		my_handler el;
 		el.pare=this;
 		solver.add_event_listener(&el);
-		if(!dfs_all)
-			solver.solve();
-		else
+		if(!dfs_all) {
+			if(solver.solve()) ++c_ans;
+		} else
 			try{
 				solver.dfs_solution_tree(dfs_col,dfs_row);
 			} catch (dlx::success_exception) {}
@@ -294,8 +294,6 @@ public:
 		return steps;
 	}
 	int get_numof_solutions() const{
-		if(!dfs_all)
-			throw std::logic_error("covter: has not dfs solution tree");
 		return (dfs_col?anss.size():c_ans);
 	}
 	solution_tree_node_ptr get_solution_tree() {
