@@ -69,19 +69,22 @@ void doit(uintmax_t lowline,int seed=-1)
 		single_doit(lowline,seed);
 		return;
 	}
-	std::mutex mtx;
+	std::mutex mtx,mtx2;
 	mtx.lock();
 	unsigned hwc=std::thread::hardware_concurrency();
 	if(hwc==0) hwc=4;
 	for(unsigned i=0;i!=hwc;++i){
-		std::thread([&mtx,lowline]() {
+		std::thread([&mtx,lowline,&mtx2]() {
 			rand_maker rm;
 			rander<9> rd(rm);
+			rander<9>::board_t ans(rd.generate(lowline));
+			mtx2.lock();
 			if(!mtx.try_lock()) {
-				pr(rd.generate(lowline));
+				pr(ans);
 				std::cout<<"--SEED "<<dynamic_cast<const rand_maker&>(static_cast<const rander<9> >(rd).get_randomer()).get_seed()<<"-----\n";
 			}
 			mtx.unlock();
+			mtx2.unlock();
 		}).detach();
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
