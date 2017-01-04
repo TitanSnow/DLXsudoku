@@ -37,39 +37,42 @@ For more information, please refer to <http://unlicense.org/>
 #ifndef RANDER_H
 #define RANDER_H
 
-class rand_maker {
-protected:
+class rand_base {
+public:
+	virtual double frand() =0;
+	virtual int randint(int min,int max) =0;
+	virtual ~rand_base() {}
+};
+
+class rand_maker:public rand_base {
 	int seed;
 public:
 	explicit rand_maker(int s=(int)std::time(0)%(int)std::clock()) {
 		seed=s;
 		std::srand(seed);
 	}
-	virtual const int& get_seed() const{
+	const int& get_seed() const{
 		return seed;
 	}
-	virtual double frand() const{
+	double frand() {
 		double rm=std::rand();
 		rm/=RAND_MAX;
 		return rm;
 	}
-	virtual int randint(int min,int max) const{
+	int randint(int min,int max) {
 		return frand()*(max-min)+min;
 	}
-	virtual ~rand_maker() {}
 };
 
 template<int N> class rander {
-public:
-	rand_maker randomer;
-protected:
-	virtual const rand_maker& get_randomer() const{
-		return randomer;
-	}
-	virtual rand_maker& get_randomer() {
+	rand_base& randomer;
+	rand_base& get_randomer() {
 		return randomer;
 	}
 public:
+	const rand_base& get_randomer() const{
+		return randomer;
+	}
 	typedef typename covter<N>::board_t board_t;
 private:
 	std::uintmax_t level(board_t vs) const{
@@ -84,7 +87,7 @@ private:
 		return ans;
 	}
 public:
-	board_t generate(std::uintmax_t lowline) const{
+	board_t generate(std::uintmax_t lowline) {
 		board_t vs,prev,cp;
 		std::fill_n(std::back_inserter(vs),N,std::string(N,'-'));
 		do {
@@ -114,6 +117,7 @@ public:
 		}
 		return vs;
 	}
+	explicit rander(rand_base& rm):randomer(rm) {}
 };
 
 #endif

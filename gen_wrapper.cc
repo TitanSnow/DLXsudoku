@@ -46,6 +46,7 @@ const char timeout_error[]=
 #include<cctype>
 #include<thread>
 #include<chrono>
+#include<memory>
 
 void pr(const std::vector<std::string>& vs) {
 	for(int i=0; i!=9; ++i) {
@@ -69,8 +70,11 @@ int main()
 	std::cout<<"Input lowline: ";
 	uintmax_t lowline;
 	std::cin>>lowline;
-	rander<9> rd;
-	if(seed!=-1) rd.randomer=rand_maker(seed);
+	std::unique_ptr<rand_maker> prm;
+	if(seed!=-1) prm.reset(new rand_maker(seed));
+	else prm.reset(new rand_maker);
+	rand_maker& rm=*prm;
+	rander<9> rd(rm);
 	std::thread([]() {
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 		std::cout<<timeout_error;
@@ -78,6 +82,6 @@ int main()
 		std::terminate();
 	}).detach();
 	pr(rd.generate(lowline));
-	std::cout<<"--SEED "<<rd.randomer.get_seed()<<"-----\n";
+	std::cout<<"--SEED "<<dynamic_cast<const rand_maker&>(static_cast<const rander<9> >(rd).get_randomer()).get_seed()<<"-----\n";
 	return 0;
 }
