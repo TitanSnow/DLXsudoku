@@ -1,3 +1,4 @@
+project(DLXsudoku)
 add_executable(sudoku sudoku.cc wrapper.cc)
 add_executable(gen sudoku.cc gen_wrapper.cc)
 set_property(TARGET sudoku PROPERTY CXX_STANDARD 11)
