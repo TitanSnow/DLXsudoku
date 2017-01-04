@@ -46,7 +46,7 @@ const char timeout_error[]=
 #include<cctype>
 #include<thread>
 #include<chrono>
-#include<memory>
+#include<mutex>
 
 void pr(const std::vector<std::string>& vs) {
 	for(int i=0; i!=9; ++i) {
@@ -55,6 +55,37 @@ void pr(const std::vector<std::string>& vs) {
 		std::cout.put('\n');
 	}
 	//std::cout.flush();
+}
+void single_doit(uintmax_t lowline,int seed)
+{
+	rand_maker rm(seed);
+	rander<9> rd(rm);
+	pr(rd.generate(lowline));
+	std::cout<<"--SEED "<<dynamic_cast<const rand_maker&>(static_cast<const rander<9> >(rd).get_randomer()).get_seed()<<"-----\n";
+}
+void doit(uintmax_t lowline,int seed=-1)
+{
+	if(seed!=-1) {
+		single_doit(lowline,seed);
+		return;
+	}
+	std::mutex mtx;
+	mtx.lock();
+	unsigned hwc=std::thread::hardware_concurrency();
+	if(hwc==0) hwc=4;
+	for(unsigned i=0;i!=hwc;++i){
+		std::thread([&mtx,lowline]() {
+			rand_maker rm;
+			rander<9> rd(rm);
+			if(!mtx.try_lock()) {
+				pr(rd.generate(lowline));
+				std::cout<<"--SEED "<<dynamic_cast<const rand_maker&>(static_cast<const rander<9> >(rd).get_randomer()).get_seed()<<"-----\n";
+			}
+			mtx.unlock();
+		}).detach();
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+	}
+	mtx.lock();
 }
 int main()
 {
@@ -70,18 +101,12 @@ int main()
 	std::cout<<"Input lowline: ";
 	uintmax_t lowline;
 	std::cin>>lowline;
-	std::unique_ptr<rand_maker> prm;
-	if(seed!=-1) prm.reset(new rand_maker(seed));
-	else prm.reset(new rand_maker);
-	rand_maker& rm=*prm;
-	rander<9> rd(rm);
 	std::thread([]() {
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 		std::cout<<timeout_error;
 		std::cout.flush();
 		std::terminate();
 	}).detach();
-	pr(rd.generate(lowline));
-	std::cout<<"--SEED "<<dynamic_cast<const rand_maker&>(static_cast<const rander<9> >(rd).get_randomer()).get_seed()<<"-----\n";
+	doit(lowline,seed);
 	return 0;
 }
