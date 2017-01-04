@@ -3,6 +3,7 @@
 ![build-passing](https://img.shields.io/badge/build--passing-clang3.8.1-brightgreen.svg)
 ![build-passing](https://img.shields.io/badge/build--passing-VisualStudio2015(MSVC19.0.24215.1)-brightgreen.svg)
 [![LICENSE](https://img.shields.io/badge/LICENSE-Unlicense-brightgreen.svg)](LICENSE)
+![optimize](https://img.shields.io/badge/optimize-multithread-blue.svg)
 
 	./configure
 	make
