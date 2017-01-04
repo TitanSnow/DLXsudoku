@@ -89,6 +89,7 @@ void doit(uintmax_t lowline,int seed=-1)
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 	mtx.lock();
+	mtx.unlock();
 }
 int main()
 {
