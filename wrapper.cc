@@ -86,10 +86,11 @@ public:
 				covter<9> cvt2(vs2,false,true);
 				c_ans=cvt2.get_numof_solutions();
 			});
-			std::thread th2([&c_ans]() {
+			std::thread th2([&c_ans,this]() {
 				std::this_thread::sleep_for(std::chrono::seconds(1));
 				if(c_ans!=-1) return;
 				std::cout<<too_many_error;
+				pr();
 				std::cout.flush();
 				std::terminate();
 			});
