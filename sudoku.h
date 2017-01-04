@@ -37,11 +37,12 @@ For more information, please refer to <http://unlicense.org/>
 #include<memory>
 #include<exception>
 #include<set>
+#include<functional>
 
 #ifndef SUDOKU_H
 #define SUDOKU_H
 
-struct handler {
+struct handler:public std::binary_function<int,int,void> {
 	virtual void operator() (int,int) =0;
 	virtual ~handler();
 };
