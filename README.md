@@ -1,9 +1,5 @@
-![build-passing](https://img.shields.io/badge/build--passing-g%2B%2B6.2.0-brightgreen.svg)
-![build-passing](https://img.shields.io/badge/build--passing-tdm--g%2B%2B5.1.0-brightgreen.svg)
-![build-passing](https://img.shields.io/badge/build--passing-clang3.8.1-brightgreen.svg)
-![build-passing](https://img.shields.io/badge/build--passing-VisualStudio2015(MSVC19.0.24215.1)-brightgreen.svg)
-[![LICENSE](https://img.shields.io/badge/LICENSE-Unlicense-brightgreen.svg)](LICENSE)
-![optimize](https://img.shields.io/badge/optimize-multithread-blue.svg)
+[![Build Status](https://travis-ci.org/TitanSnow/DLXsudoku.svg?branch=master)](https://travis-ci.org/TitanSnow/DLXsudoku)
+[![Build status](https://ci.appveyor.com/api/projects/status/u836g333c6w5srfn?svg=true)](https://ci.appveyor.com/project/TitanSnow/dlxsudoku)
 
 	./configure
 	make
