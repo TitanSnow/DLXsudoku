@@ -8,4 +8,4 @@
 	./configure
 	make
 
-For VisualStudio, use command *[![](https://cmake.org/cmake/help/v3.7/_static/cmake-logo-16.png)cmake](https://cmake.org) cmake* to generate solution file. (2012 or above needed)
+For VisualStudio, use *[![](https://cmake.org/cmake/help/v3.7/_static/cmake-logo-16.png)cmake](https://cmake.org)* to generate solution file. (2012 or above needed)
