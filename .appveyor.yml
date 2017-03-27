@@ -1,0 +1,11 @@
+version: No.{build}
+image:
+  - Visual Studio 2013
+  - Visual Studio 2015
+  - Visual Studio 2017
+shallow_clone: true
+before_build:
+  - mkdir build
+  - cd build
+  - cmake ..
+  - dir

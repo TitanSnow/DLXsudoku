@@ -1,0 +1,11 @@
+language: cpp
+sudo: false
+os:
+  - linux
+  - osx
+compiler:
+  - gcc
+  - clang
+script:
+  - ./configure
+  - make
